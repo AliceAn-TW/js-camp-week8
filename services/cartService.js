@@ -2,8 +2,14 @@
 // 購物車服務
 // ========================================
 
-const { fetchCart, addToCart, updateCartItem, deleteCartItem, clearCart } = require('../api');
-const { validateCartQuantity, formatCurrency } = require('../utils');
+const {
+  fetchCart,
+  addToCart,
+  updateCartItem,
+  deleteCartItem,
+  clearCart,
+} = require("../api");
+const { validateCartQuantity, formatCurrency } = require("../utils");
 
 /**
  * 取得購物車
@@ -12,6 +18,7 @@ const { validateCartQuantity, formatCurrency } = require('../utils');
 async function getCart() {
   // 請實作此函式
   // 提示：呼叫 fetchCart() 取得購物車資料並回傳
+  return fetchCart();
 }
 
 /**
@@ -25,6 +32,13 @@ async function addProductToCart(productId, quantity) {
   // 提示：先用 utils validateCartQuantity() 驗證數量，驗證失敗時回傳 { success: false, error: ... }
   // 驗證通過後，呼叫 addToCart() 加入購物車
   // 回傳格式：{ success: true, data: ... } / { success: false, error: ... }
+  const { isValid, errors } = validateCartQuantity(quantity);
+  if (!isValid) {
+    return { success: isValid, error: errors };
+  } else {
+    const data = await addToCart(productId, quantity);
+    return { success: isValid, data };
+  }
 }
 
 /**
@@ -38,6 +52,13 @@ async function updateProduct(cartId, quantity) {
   // 提示：先用 utils validateCartQuantity() 驗證數量，驗證失敗時回傳 { success: false, error: ... }
   // 驗證通過後，呼叫 updateCartItem() 更新數量
   // 回傳格式：{ success: true, data: ... } / { success: false, error: ... }
+  const { isValid, errors } = validateCartQuantity(quantity);
+  if (!isValid) {
+    return { success: isValid, error: errors };
+  } else {
+    const data = await updateCartItem(cartId, quantity);
+    return { success: isValid, data };
+  }
 }
 
 /**
@@ -49,6 +70,10 @@ async function removeProduct(cartId) {
   // 請實作此函式
   // 提示：呼叫 deleteCartItem()
   // 回傳格式：{ success: true, data: ... } / { success: false, error: ... }
+  const data = await deleteCartItem(cartId);
+  return data
+    ? { success: true, data }
+    : { success: false, error: data.message };
 }
 
 /**
@@ -58,7 +83,11 @@ async function removeProduct(cartId) {
 async function emptyCart() {
   // 請實作此函式
   // 提示：呼叫 clearCart()
-  // 回傳格式：{ success: true, data: ... } 
+  // 回傳格式：{ success: true, data: ... }
+  const data = await clearCart();
+  return data
+    ? { success: true, data }
+    : { success: false, error: data.message };
 }
 
 /**
@@ -69,6 +98,14 @@ async function getCartTotal() {
   // 請實作此函式
   // 提示：呼叫 fetchCart() 取得購物車資料
   // 回傳格式：{ total: 原始金額, finalTotal: 折扣後金額, itemCount: 商品筆數 }
+  const data = await fetchCart();
+  const { total, finalTotal, carts } = data;
+  const itemCount = carts.reduce((num, cart) => num + cart.qty, 0);
+  return {
+    total,
+    finalTotal,
+    itemCount,
+  };
 }
 
 /**
@@ -99,5 +136,5 @@ module.exports = {
   removeProduct,
   emptyCart,
   getCartTotal,
-  displayCart
+  displayCart,
 };
