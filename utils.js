@@ -14,6 +14,10 @@ function getDiscountRate(product) {
   const { price, origin_price } = product;
   const discount = (price / origin_price) * 10;
   return `${Math.round(discount)}折`;
+
+  // 助教做法
+  // const rate = Math.round((product.price / product.origin_price) * 10);
+  // return `${rate}折`;
 }
 
 /**
@@ -75,11 +79,11 @@ function validateOrderUser(data) {
   const telRule = /^09\d{8}$/;
   const emailRule = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-  if (!name || name === "") errors.push("name 不可為空");
+  if (!name || name.trim() === "") errors.push("name 不可為空");
   if (!tel || !telRule.test(tel)) errors.push("tel 必須是 09 開頭的 10 位數字");
   if (!email || !emailRule.test(email)) errors.push("email 格式錯誤");
   // if (!email || !email.includes("@")) errors.push("email 必須包含 @ 符號");
-  if (!address || address === "") errors.push("address 不可為空");
+  if (!address || address.trim() === "") errors.push("address 不可為空");
   if (!payment || !paidWay.includes(payment))
     errors.push("payment 必須是 ATM, Credit Card, Apple Pay 其中之一");
 
@@ -126,7 +130,10 @@ function formatCurrency(amount) {
   if (typeof amount !== "number" || amount < 1) {
     return "輸入錯誤：必須為有效數字";
   }
-  return `NT$ ${new Intl.NumberFormat("zh-TW").format(amount)}`;
+  return `NT$ ${amount.toLocaleString("zh-TW")}`;
+
+  // 其他方法
+  // return `NT$ ${new Intl.NumberFormat("zh-TW").format(amount)}`;
 }
 
 module.exports = {

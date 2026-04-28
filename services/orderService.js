@@ -29,9 +29,14 @@ async function placeOrder(userInfo) {
   const { isValid, errors } = result;
   if (!isValid) {
     return { success: false, errors };
-  } else {
-    const data = await createOrder();
+  }
+
+  //驗證通過後
+  try {
+    const data = await createOrder(userInfo);
     return { success: true, data };
+  } catch (error) {
+    return { success: isValid, error: error.message };
   }
 }
 
@@ -77,10 +82,12 @@ async function updatePaymentStatus(orderId, isPaid) {
   // 請實作此函式
   // 提示：呼叫 updateOrderStatus()
   // 回傳格式：{ success: true, data: ... } / { success: false, error: ... }
-  const data = await updateOrderStatus(orderId, isPaid);
-  return data.status
-    ? { success: true, data }
-    : { success: false, error: data.message };
+  try {
+    const data = await updateOrderStatus(orderId, isPaid);
+    return { success: true, data };
+  } catch (error) {
+    return { success: false, error: error.message };
+  }
 }
 
 /**
@@ -92,10 +99,12 @@ async function removeOrder(orderId) {
   // 請實作此函式
   // 提示：呼叫 deleteOrder()
   // 回傳格式：{ success: true, data: ... } / { success: false, error: ... }
-  const data = await deleteOrder(orderId);
-  return data.status
-    ? { success: true, data }
-    : { success: false, error: data.message };
+  try {
+    const data = await deleteOrder(orderId);
+    return { success: true, data };
+  } catch (error) {
+    return { success: false, error: error.message };
+  }
 }
 
 /**
@@ -141,36 +150,11 @@ function displayOrders(orders) {
   // 請實作此函式
   // 提示：先判斷訂單陣列是否為空，若空則輸出「沒有訂單」
   // 使用 formatOrder() 格式化每筆訂單後再輸出
-  const ordersList = [];
-  if (orders === []) {
-    return "沒有訂單";
-  } else {
-    orders.forEach((order) => {
-      const {
-        id,
-        user,
-        products,
-        total,
-        totalFormatted,
-        paid,
-        paidText,
-        createdAt,
-        daysAgo,
-      } = formatOrder(order);
-      ordersList.push({
-        訂單編號: id,
-        顧客姓名: user.name,
-        聯絡電話: user.tel,
-        寄送地址: user.address,
-        付款方式: createdAt,
-        建立時間: createdAt,
-        商品明細: order.products.map((product) => {
-          return `${product.title} x ${quantity}`;
-        }),
-      });
-    });
-    return productsList;
+  if (!orders || orders.length === 0) {
+    console.log("沒有訂單");
+    return;
   }
+
   // 預期輸出格式：
   // 訂單列表：
   // ========================================
@@ -188,6 +172,29 @@ function displayOrders(orders) {
   // 商品明細：
   //   - 產品名稱 x 2（產品數量）
   // ========================================
+
+  console.log("訂單列表：");
+  console.log("========================================");
+  orders.forEach((order, index) => {
+    const { id, user, products, totalFormatted, paidText, createdAt, daysAgo } =
+      formatOrder(order);
+    console.log(`訂單 ${index + 1}`);
+    console.log("----------------------------------------");
+    console.log(`訂單編號：${id}`);
+    console.log(`顧客姓名：${user.name}`);
+    console.log(`聯絡電話：${user.tel}`);
+    console.log(`寄送地址：${user.address}`);
+    console.log(`付款方式：${user.payment}`);
+    console.log(`訂單金額：${totalFormatted}`);
+    console.log(`付款狀態：${paidText}`);
+    console.log(`建立時間：${createdAt} ${daysAgo}`);
+    console.log("----------------------------------------");
+    console.log(`商品明細：`);
+    products.forEach((product) => {
+      console.log(`  - ${product.title} x ${order.quantity}`);
+    });
+    console.log("========================================");
+  });
 }
 
 module.exports = {

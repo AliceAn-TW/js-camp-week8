@@ -9,9 +9,6 @@ const { API_PATH, BASE_URL, ADMIN_TOKEN } = require("./config");
 
 const customerApi = axios.create({
   baseURL: `${BASE_URL}/api/livejs/v1/customer/${API_PATH}`,
-  headers: {
-    "Content-Type": "application/json",
-  },
 });
 
 /**
@@ -21,12 +18,8 @@ const customerApi = axios.create({
 async function fetchProducts() {
   // 請實作此函式
   // 回傳 response.data.products
-  try {
-    const response = await customerApi.get("/products");
-    return response.data.products;
-  } catch (error) {
-    console.log(error.message);
-  }
+  const response = await customerApi.get("/products");
+  return response.data.products;
 }
 
 /**
@@ -35,12 +28,12 @@ async function fetchProducts() {
  */
 async function fetchCart() {
   // 請實作此函式
-  try {
-    const response = await customerApi.get("/carts");
-    return response.data;
-  } catch (error) {
-    console.log(error.message);
-  }
+  const response = await customerApi.get("/carts");
+  return {
+    carts: response.data.carts,
+    total: response.data.total,
+    finalTotal: response.data.finalTotal,
+  };
 }
 
 /**
@@ -51,17 +44,13 @@ async function fetchCart() {
  */
 async function addToCart(productId, quantity) {
   // 請實作此函式
-  try {
-    const response = await customerApi.post("/carts", {
-      data: {
-        productId,
-        quantity,
-      },
-    });
-    return response.data;
-  } catch (error) {
-    console.log(error.message);
-  }
+  const response = await customerApi.post("/carts", {
+    data: {
+      productId,
+      quantity,
+    },
+  });
+  return response.data;
 }
 
 /**
@@ -72,17 +61,13 @@ async function addToCart(productId, quantity) {
  */
 async function updateCartItem(cartId, quantity) {
   // 請實作此函式
-  try {
-    const response = await customerApi.patch("/carts", {
-      data: {
-        id: cartId,
-        quantity,
-      },
-    });
-    return response.data;
-  } catch (error) {
-    console.log(error.message);
-  }
+  const response = await customerApi.patch("/carts", {
+    data: {
+      id: cartId,
+      quantity,
+    },
+  });
+  return response.data;
 }
 
 /**
@@ -139,7 +124,6 @@ async function createOrder(userInfo) {
 const adminApi = axios.create({
   baseURL: `${BASE_URL}/api/livejs/v1/admin/${API_PATH}`,
   headers: {
-    "Content-Type": "application/json",
     authorization: ADMIN_TOKEN,
   },
 });
@@ -150,12 +134,8 @@ const adminApi = axios.create({
  */
 async function fetchOrders() {
   // 請實作此函式
-  try {
-    const response = await adminApi.get("/orders");
-    return response.data.orders;
-  } catch (error) {
-    console.log(error.message);
-  }
+  const response = await adminApi.get("/orders");
+  return response.data.orders;
 }
 
 /**
