@@ -12,6 +12,8 @@ const dayjs = require("dayjs");
 function getDiscountRate(product) {
   // 請實作此函式
   const { price, origin_price } = product;
+  if (!price || !origin_price || price >= origin_price) return "沒有折扣";
+
   const discount = (price / origin_price) * 10;
   return `${Math.round(discount)}折`;
 

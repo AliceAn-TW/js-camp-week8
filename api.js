@@ -5,11 +5,17 @@
 const axios = require("axios");
 const { API_PATH, BASE_URL, ADMIN_TOKEN } = require("./config");
 
-// ========== 客戶端 API ==========
-
+// 全域定義 aipUrl
 const customerApi = axios.create({
   baseURL: `${BASE_URL}/api/livejs/v1/customer/${API_PATH}`,
 });
+const adminApi = axios.create({
+  baseURL: `${BASE_URL}/api/livejs/v1/admin/${API_PATH}`,
+  headers: {
+    authorization: ADMIN_TOKEN,
+  },
+});
+// ========== 客戶端 API ==========
 
 /**
  * 取得產品列表
@@ -121,12 +127,6 @@ async function createOrder(userInfo) {
       authorization: ADMIN_TOKEN
     }
  */
-const adminApi = axios.create({
-  baseURL: `${BASE_URL}/api/livejs/v1/admin/${API_PATH}`,
-  headers: {
-    authorization: ADMIN_TOKEN,
-  },
-});
 
 /**
  * 取得訂單列表
